@@ -1,0 +1,8 @@
+validity-term: 10080
+
+jwt:
+  authorities:
+    key: roles
+  token:
+    secret-key: ${JWT_SECRET:1xvrtrt56}
+    expire-length: ${JWT_EXPIRE_LENGTH:86400000}
