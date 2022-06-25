@@ -39,15 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            System.out.println("ENTER DO INTERNAL FILTER NOW 1");
             String token = jwtUtil.extractTokenFromRequest(request);
             if (StringUtils.isNotEmpty(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                System.out.println("SO TOKEN IS NOT NULL ");
-
                 //extract the username from token
                 String userName = jwtUtil.extractUsername(token);
                 //String userType = jwtUtil.extractUserTypeFromToken(token);
-                System.out.println("CALLING LOAD USER BY NAME ");
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
                 if (jwtUtil.validateToken(token, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -62,7 +58,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 //this.writeErrorResponse("Invalid Token",response);
                 //return;
             }
-            System.out.println("NOW CALLING FILTER CHAIN ");
             filterChain.doFilter(request, response);
        // }catch(JwtException e){
             SecurityContextHolder.clearContext();
@@ -73,34 +68,5 @@ public class JwtFilter extends OncePerRequestFilter {
             LOGGER.error("Unknown error", e);
         }
     }
-
-//    private void writeErrorResponse(String errMsg, HttpServletResponse response,HttpStatus httpStatus) {
-//        try {
-//            ApiDataResponse ar = new ApiDataResponse<>(httpStatus);
-//            ar.setMessage(errMsg);
-//            response.setStatus(httpStatus.value());
-//            response.setContentType("application/json");
-//            ObjectMapper mapper = new ObjectMapper();
-//            PrintWriter out = response.getWriter();
-//            out.write(mapper.writeValueAsString(ar));
-//        }catch (Exception e){
-//            LOGGER.error("Unknown error", e);
-//        }
-//    }
-
-
-//    private UserDetails loadUserByUsername(String userName,String userType) {
-//        //use strategy here to fetch appropriate user detail service to use to load user
-//        //based on usertype store in token
-//        String strategyKey;
-//        if(userType.equals(UserType.ADMIN.name())){
-//            strategyKey="adminUserDetailsService";
-//        }else if (userType.equals(UserType.CLIENT.name())){
-//            strategyKey="clientUserDetailsService";
-//        } else {
-//            strategyKey="engineerUserDetailsService";
-//        }
-//       return userDetailsServiceStrategies.get(strategyKey).loadUserByUsername(userName);
-//    }
 
 }

@@ -1,8 +1,5 @@
-package com.reddit.service;//package com.reddit.app.service;
+package com.reddit.config.mail;//package com.reddit.app.service;
 
-import com.reddit.config.mail.EmailConfiguration;
-import com.reddit.content.NotificationEmail;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

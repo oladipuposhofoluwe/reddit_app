@@ -18,7 +18,7 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
     private String text;
 
@@ -27,7 +27,6 @@ public class Comment {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId")
     private Post post;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")

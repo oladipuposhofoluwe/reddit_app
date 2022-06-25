@@ -1,4 +1,4 @@
-package com.reddit.content;//package com.reddit.app.content;
+package com.reddit.config.mail;//package com.reddit.app.content;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

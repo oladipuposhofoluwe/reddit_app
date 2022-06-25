@@ -1,7 +1,8 @@
 package com.reddit.service;//package com.reddit.app.service;
 
 import com.reddit.config.JwtUtil;
-import com.reddit.content.NotificationEmail;
+import com.reddit.config.mail.MailService;
+import com.reddit.config.mail.NotificationEmail;
 import com.reddit.dto.AuthenticationResponse;
 import com.reddit.dto.LoginRequest;
 import com.reddit.dto.RegisterRequestDto;
@@ -46,7 +47,7 @@ public class AuthService {
         System.out.println("HERERERERER 4");
 
         User user = new User();
-        user.setUserName(registerRequestDto.getUserName());
+        user.setUsername(registerRequestDto.getUserName());
         user.setEmail(registerRequestDto.getEmail());
         user.setCreatedDate(Instant.now());
         user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
@@ -76,8 +77,8 @@ public class AuthService {
 
     @Transactional
     void fetchUserAndEnable(VerificationToken verificationToken) {
-        String username = verificationToken.getUser().getUserName();
-        User user = userRepository.findByUserName(username).orElseThrow(()-> new SpringRedditException("user with the name " + username+ " not found "));
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new SpringRedditException("user with the name " + username+ " not found "));
         user.setEnable(true);
         userRepository.save(user);
     }

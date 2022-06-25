@@ -34,7 +34,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         public void configure(WebSecurity web) {
-                System.out.println("CALLING WEB SECURITY CONFIGURATION ");
         }
 
         public SecurityConfig() {
@@ -43,7 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-                System.out.println("IN SPRINF SECURITY CONFIGURATION NOW...");
             http.cors();
             http.csrf().disable()
                     .authorizeRequests()
@@ -59,20 +57,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-                System.out.println("DONE WITH SPRING CONFIGURATION.....");
         }
 
         @Bean
         @Override
         public AuthenticationManager authenticationManagerBean() throws Exception {
-                System.out.println("CALLING AUTHENTICATION MANAGER BEAN....");
             return super.authenticationManagerBean();
         }
 
         @Override
         @Autowired
         public void configure(AuthenticationManagerBuilder auth) throws Exception {
-                System.out.println("CALLING AUTHENTICATION MANAGER BUILDER ...");
             auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         }
 

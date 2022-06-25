@@ -2,6 +2,7 @@ package com.reddit.service.post;
 
 import com.reddit.config.security.admin.UserInfo;
 import com.reddit.config.security.admin.UserServiceInfo;
+import com.reddit.dto.comment.CommentsDto;
 import com.reddit.dto.post.PostRequest;
 import com.reddit.dto.post.PostResponse;
 import com.reddit.exception.SpringRedditException;
@@ -41,6 +42,7 @@ public class PostServiceImpl implements PostService{
         if (currentUser == null){
             throw new SpringRedditException("Unauthorized User");
         }
+        System.out.println("CURRENT USER " + currentUser.getUser().getUsername());
         postRepository.save(postMapper.map(postRequest, subreddit.get(), currentUser.getUser()));
     }
 
@@ -76,14 +78,11 @@ public class PostServiceImpl implements PostService{
     @Transactional(readOnly = true)
     @Override
     public List<PostResponse> getPostByUsername(String userName) {
-        User user = this.userRepository
-                .findByUsername(userName)
-                .orElseThrow(() -> new SpringRedditException("User not found " + userName));
-
-       return this.postRepository.findByUser(user).stream()
+        System.out.println(userName + " THIS IS USER  111");
+        User user = this.userRepository.findByUsername(userName).orElseThrow(()-> new SpringRedditException("User not found " + userName));
+        System.out.println(user + " THIS IS USER ");
+       return this.postRepository.findAllByUser(user).stream()
                 .map(postMapper::mapToDto)
                 .collect(Collectors.toList());
     }
-
-
 }
