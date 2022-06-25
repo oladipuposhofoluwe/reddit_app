@@ -43,7 +43,7 @@ public class CommentServiceImpl implements CommentService{
        }
        //Comment comment = commentMapper.map(commentsDto, post, currentUser.getUser()); //mapstruct not generation post id
        this.mapCommentDtoToCommentEntity(commentsDto, post, currentUser.getUser());
-       String message = this.mailContentBuilder.build(post.getUser() + " posted a comment on your post ");
+       String message = this.mailContentBuilder.build(post.getUser().getUsername().toUpperCase() + " posted a comment on your post ");
        sendCommentNotification(message, post.getUser());
     }
 
@@ -52,18 +52,21 @@ public class CommentServiceImpl implements CommentService{
         Post post = this.postRepository.findById(postId).orElseThrow(()-> new SpringRedditException("Post id not found " + postId));
         return this.commentRepository.findByPost(post)
                 .stream()
-                .map(commentMapper::mapToDto).collect(Collectors.toList());
+                .map(commentMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<CommentsDto> getAllCommentsByUser(String userName) {
         User user = this.userRepository.findByUsername(userName).orElseThrow(()-> new SpringRedditException("User not found " + userName));
-        System.out.println(user + " THIS IS USER ");
-        return this.commentRepository.findAllByUser(user).stream().map(commentMapper::mapToDto).collect(Collectors.toList());
+        return this.commentRepository.findAllByUser(user)
+                .stream()
+                .map(commentMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     private void sendCommentNotification(String message, User user) {
-      mailService.sendSimpleMessage(new NotificationEmail(user.getUsername() + "commented on your post",user.getEmail(), message));
+      mailService.sendSimpleMessage(new NotificationEmail(user.getUsername().toUpperCase() + " commented on your post ", user.getEmail(), message));
     }
 
     private void mapCommentDtoToCommentEntity(CommentsDto commentsDto, Post post, User user) {

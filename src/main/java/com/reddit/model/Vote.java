@@ -18,7 +18,7 @@ import java.util.List;
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long voteId;
 
     private VoteType voteType;
 
@@ -26,7 +26,6 @@ public class Vote {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId")
     private Post post;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
