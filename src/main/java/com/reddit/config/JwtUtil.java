@@ -67,8 +67,13 @@ public class JwtUtil implements AuthTokenProvider {
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(now).setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey).compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
     }
 
 
@@ -105,8 +110,11 @@ public class JwtUtil implements AuthTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
+    public long getValidityInMilliseconds() {
+        return validityInMilliseconds;
+    }
 
-//    @Override
+    //    @Override
 //    public Collection<String> extractAuthoritiesClaims(String token) {
 //        Claims claims = this.extractAllClaims(token);
 //        if(claims.get(AUTHORITIES_KEY)!=null) {

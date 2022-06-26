@@ -5,11 +5,11 @@ public enum VoteType  {
     DOWNVOTE(-1),;
 
 
-    public final int direction;
+    public  int direction;
 
 
      VoteType(int direction) {
-         this.direction = direction;
+
      }
 
      public int getDisplay() {

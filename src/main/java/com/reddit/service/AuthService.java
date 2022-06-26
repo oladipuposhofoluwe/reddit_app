@@ -5,6 +5,7 @@ import com.reddit.config.mail.MailService;
 import com.reddit.config.mail.NotificationEmail;
 import com.reddit.dto.AuthenticationResponse;
 import com.reddit.dto.LoginRequest;
+import com.reddit.dto.RefreshTokenRequest;
 import com.reddit.dto.RegisterRequestDto;
 import com.reddit.exception.AccountDisabledException;
 import com.reddit.exception.InvalidCredentialsException;
@@ -14,6 +15,7 @@ import com.reddit.model.User;
 import com.reddit.model.VerificationToken;
 import com.reddit.repository.UserRepository;
 import com.reddit.repository.VerificationTokenRepository;
+import com.reddit.service.refreshToken.RefreshTokenService;
 import com.reddit.utils.AuthUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +44,10 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtTokenUtils;
 
+    private final RefreshTokenService refreshTokenService;
+
     @Transactional
     public void signup(RegisterRequestDto registerRequestDto){
-        System.out.println("HERERERERER 4");
-
         User user = new User();
         user.setUsername(registerRequestDto.getUserName());
         user.setEmail(registerRequestDto.getEmail());
@@ -94,23 +96,18 @@ public class AuthService {
     //@Override
     public AuthenticationResponse login(LoginRequest loginRequest) {
         try {
-            System.out.println("AUTHENTICATION MANAGER CALL USERNAME PASSWORD AUTH TO AUTHENTCATE.....");
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
-            System.out.println("AUTHENTICATION SUCCESSFULL");
-            System.out.println("LOGIN USENAM " + loginRequest.getUserName());
             //User user = this.userRepository.findByEmail(loginRequest.getUserame()).orElseThrow(() -> new InvalidCredentialsException("User with supplied credential does not exist"));
-            System.out.println("usename " +  authentication.getName());
             String token = jwtTokenUtils.generateToken(authentication.getName());
             if (isEmptyToken(token)) {
                 throw new UnAuthorizeException("invalid username/password:");
             }
-            System.out.println("TOKEN " + token);
-//            CustomerRefreshToken refreshToken = this.createRefreshTokenModel(user);
-//            refreshToken = (CustomerRefreshToken) this.saveRefreshToken(refreshToken);
-            //create response
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             AuthenticationResponse authResponse = new AuthenticationResponse(); //this.createLoginResponse(user, token);
             authResponse.setAuthenticationToken(token);
+            authResponse.setExpiresAt(Instant.now().plusMillis(jwtTokenUtils.getValidityInMilliseconds()));
+            authResponse.setRefreshToken(refreshTokenService.generateRefreshToken().getToken());
             authResponse.setUsername(loginRequest.getUserName());
             return authResponse;
 
@@ -127,5 +124,17 @@ public class AuthService {
 
     private boolean isEmptyToken(String token) {
         return AuthUtils.isEmptyToken(token);
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+       String token = jwtTokenUtils.generateToken(refreshTokenRequest.getUsername());
+       return AuthenticationResponse
+               .builder()
+               .authenticationToken(token)
+               .refreshToken(refreshTokenRequest.getRefreshToken())
+               .expiresAt(Instant.now().plusMillis(jwtTokenUtils.getValidityInMilliseconds()))
+               .username(refreshTokenRequest.getUsername())
+               .build();
     }
 }
