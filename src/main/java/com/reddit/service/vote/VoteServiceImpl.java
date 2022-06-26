@@ -23,8 +23,8 @@ public class VoteServiceImpl implements VoteService{
     private final UserServiceInfo userServiceInfo;
 
     @Override
-    public void votePost(Long postId, VoteDto voteDto) {
-        Post post = postRepository.findById(postId).orElseThrow(()-> new SpringRedditException("Not post found with ID: " + postId));
+    public void votePost(VoteDto voteDto) {
+        Post post = postRepository.findById(voteDto.getPostId()).orElseThrow(()-> new SpringRedditException("Not post found with ID: " + voteDto.getPostId()));
         UserInfo currentUser = userServiceInfo.authenticateUser();
         if (currentUser == null){
             throw new SpringRedditException("UnAuthorized user...");
@@ -46,7 +46,6 @@ public class VoteServiceImpl implements VoteService{
         vote.setVoteType(voteDto.getVoteType());
         vote.setPost(post);
         vote.setUser(currentUser.getUser());
-        post.setVoteCount(voteDto.getVoteType().getDisplay());
         return vote;
     }
 }

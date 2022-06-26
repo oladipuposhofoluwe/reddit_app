@@ -26,9 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     //@Cacheable("adminUserAuthInfo")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("NOW WANT TO LOAD USER");
         User user = userRepository.findAuthUserByEmail(username).orElseThrow(() -> new UsernameNotFoundException("No user found with username:" + username));
-        System.out.println("DONE LOADING USER... ");
         UserInfo userInfo = new UserInfo(user);
         return userInfo;
     }

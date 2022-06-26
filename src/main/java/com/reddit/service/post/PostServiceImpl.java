@@ -42,7 +42,6 @@ public class PostServiceImpl implements PostService{
         if (currentUser == null){
             throw new SpringRedditException("Unauthorized User");
         }
-        System.out.println("CURRENT USER " + currentUser.getUser().getUsername());
         postRepository.save(postMapper.map(postRequest, subreddit.get(), currentUser.getUser()));
     }
 
@@ -68,8 +67,8 @@ public class PostServiceImpl implements PostService{
     public List<PostResponse> getPostBySubreddit(Long subredditId) {
         Subreddit subreddit = this.subredditRepository.findById(subredditId)
                 .orElseThrow(()-> new SpringRedditException("Subreddit now found"));
-        System.out.println("SUB REDDIT FOUNG ");
-        List<Post> posts = this.postRepository.findAllBySubreddit(subreddit);
+         List<Post> posts = this.postRepository.findAllBySubreddit(subreddit);
+
         return posts.stream()
                 .map(postMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -78,10 +77,10 @@ public class PostServiceImpl implements PostService{
     @Transactional(readOnly = true)
     @Override
     public List<PostResponse> getPostByUsername(String userName) {
-        System.out.println(userName + " THIS IS USER  111");
         User user = this.userRepository.findByUsername(userName).orElseThrow(()-> new SpringRedditException("User not found " + userName));
-        System.out.println(user + " THIS IS USER ");
-       return this.postRepository.findAllByUser(user).stream()
+
+        return this.postRepository.findAllByUser(user)
+                .stream()
                 .map(postMapper::mapToDto)
                 .collect(Collectors.toList());
     }
